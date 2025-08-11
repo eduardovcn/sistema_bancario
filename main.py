@@ -53,11 +53,11 @@ def main ():
         elif opcao == "nc":
             nome = input("Informe o nome do titular da conta: ")
             cpf = input("Informe o CPF do titular da conta: ")
-            banco.criar_conta(nome, cpf, numero_conta=banco.numero_conta)
-            print(f"Conta criada com sucesso! Número da conta: {banco.AGENCIA},{len(banco.contas)}")
+            banco.criar_conta(nome, cpf)
+            
 
         elif opcao == "lc":
-            banco.listar_contas(contas)
+            banco.listar_contas(nome, contas)
 
         elif opcao == "nu":
             nome = input("Informe o nome do usuário: ")

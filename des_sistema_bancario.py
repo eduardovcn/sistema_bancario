@@ -1,15 +1,15 @@
 
 
 LIMITE_SAQUES = 3
-AGENCIA = "0001"
+AGENCIA = "01"
 
 saldo = 0
 limite = 500
 extrato = ""
 numero_saques = 0
-numero_conta = 0000
 usuarios = []
 contas = []
+
 
 
 def depositar(saldo, valor, extrato, /):
@@ -36,11 +36,14 @@ def extrato_conta(saldo, extrato):
     print(f"\nSaldo: R$ {saldo:.2f}")
     print("==========================================")
 
-def criar_conta(nome, cpf, numero_conta):
-    if nome and cpf in usuarios:
-        numero_conta = len(contas) + 1
-        conta ={
-            "numero_conta": numero_conta,
+def criar_conta(nome, cpf):
+    numero_conta  = len(contas) + 1
+    if any(usuario['cpf'] == cpf and usuario['nome'] == nome for usuario in usuarios):
+        
+        numero_conta_formatado = f"{numero_conta:04d}"
+
+        conta = {
+            "numero_conta": numero_conta_formatado,
             "nome": nome,
             "cpf": cpf,
             "saldo": 0,
@@ -48,18 +51,33 @@ def criar_conta(nome, cpf, numero_conta):
         }
 
         contas.append(conta)
+        print(f"Conta criada com sucesso! Agência: {AGENCIA} Conta: {numero_conta_formatado}")
         
-    
+    else:
+        print("Usuário não encontrado. Tente novamente.")
 
-def listar_contas(contas):
-    pass
+def listar_contas(nome, contas):
+    if not contas:
+        print("Nenhuma conta cadastrada.")
+        return
+
+    print("\n================ CONTAS =================")
+    for n in nome:
+        for conta in contas:
+            if conta['nome'] == n['nome'] and conta['cpf'] == n['cpf']:
+                print(f" Nome: {conta['nome']}, CPF: {conta['cpf']}, Agência: {AGENCIA} Conta: {conta['numero_conta']}, Saldo: R$ {conta['saldo']:.2f}")
+    print("==========================================")
 
 def criar_usuario(nome, data_nasc, cpf, endereco):
-    usuario = {
-        "nome": nome,
-        "data_nasc": data_nasc,
-        "cpf": cpf,
-        "endereco": endereco
+    if any(usuario['cpf'] == cpf for usuario in usuarios):
+        print("Usuário já cadastrado com este CPF.")
+        
+    else:    
+        usuario = {
+            "nome": nome,
+            "data_nasc": data_nasc,
+            "cpf": cpf,
+            "endereco": endereco
     }
     usuarios.append(usuario)
     print("Usuário criado com sucesso!")
