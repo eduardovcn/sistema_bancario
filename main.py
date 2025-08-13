@@ -24,40 +24,44 @@ def main ():
     extrato = banco.extrato
     limite_saques = banco.LIMITE_SAQUES
     usuarios = banco.usuarios
-    contas = banco.contas   
+    lista_contas = banco.lista_contas
     agencia = banco.AGENCIA
     
     while True:
         opcao = menu()
 
-        if opcao == "d":
+        if opcao not in ["d", "s", "e", "nc", "lc", "nu", "q"]:
+            print("\n@@@ Opção inválida! Tente novamente. @@@")
+            continue
+
+        elif opcao == "d":
             valor = float(input("Informe o valor do depósito: "))
-            saldo, extrato = banco.depositar(saldo, extrato, valor)
-            print(f"Depósito realizado com sucesso! Novo saldo: R$ {saldo:.2f}")
+            conta_alvo = input("Informe o número da conta_alvo(0000): ")
+            
+            banco.depositar(
+                valor=valor,
+                numero_conta_alvo=conta_alvo,
+                lista_contas=lista_contas
+            )
 
         elif opcao == "s":
             valor = float(input("Informe o valor do saque: "))
-            saldo, extrato = banco.sacar(
-                saldo=saldo,
-                valor=valor,
-                extrato=extrato,
-                numero_saques=numero_saques,
-                limite=limite,
-                LIMITE_SAQUES=limite_saques
-            )
+            numero_conta_alvo = input("Informe o número da conta_alvo(0000): ")
+
+            banco.sacar(valor, numero_conta_alvo, limite, lista_contas)
 
         elif opcao == "e":
-            banco.extrato_conta(saldo, 
-                                extrato=extrato)
+            conta_alvo = input("Informe o número da conta_alvo(0000): ")
+            banco.extrato_conta(conta_alvo, extrato, saldo)
 
         elif opcao == "nc":
-            nome = input("Informe o nome do titular da conta: ")
-            cpf = input("Informe o CPF do titular da conta: ")
+            nome = input("Informe o nome do titular da conta_alvo: ")
+            cpf = input("Informe o CPF do titular da conta_alvo: ")
             banco.criar_conta(nome, cpf)
             
 
         elif opcao == "lc":
-            banco.listar_contas(nome, contas)
+            banco.listar_contas(usuarios, lista_contas)
 
         elif opcao == "nu":
             nome = input("Informe o nome do usuário: ")
