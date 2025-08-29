@@ -16,8 +16,8 @@ lista_contas = []
 
 class Cliente:
     def __init__(self, endereco):
-        self.endereco = endereco
-        self.contas = []
+        self._endereco = endereco
+        self._contas = []
 
     def realizar_transacao(self, conta, transacao):
         transacao.registrar(conta)
@@ -29,6 +29,37 @@ class PessoaFisica(Cliente):
     def __init__(self, nome, data_nasc):
         self.nome = nome
         self.data_nasc = data_nasc
+
+class Conta:
+    def __init__(self, saldo, numero, agencia, cliente, historico):
+        self._saldo = saldo
+        self._numero = numero 
+        self._agencia = agencia 
+        self._cliente = cliente
+        self._historico = historico
+    
+    def saldo(self):
+        return self._saldo
+
+    @classmethod
+    def nova_conta(cls, cliente):
+        historico = Historico()
+        conta = cls(0, "0000", AGENCIA, cliente, historico)
+        return conta
+
+class Historico(Conta):
+    def __init__(self):
+        self._transacoes = []
+
+    def adicionar_transacao(self, tipo, valor):
+        self._transacoes.append({"tipo": tipo, "valor": valor})
+
+    def listar_transacoes(self):
+        return self._transacoes
+
+
+
+
 
     def criar_conta(self):
         numero_conta = len(self.contas) + 1
