@@ -1,4 +1,6 @@
 
+from abc import ABC, abstractmethod, abstractproperty
+from datetime import datetime
 
 LIMITE_SAQUES = 3
 AGENCIA = "01"
@@ -9,6 +11,40 @@ extrato = ""
 numero_saques = 0
 usuarios = []
 lista_contas = []
+
+
+
+class Cliente:
+    def __init__(self, endereco):
+        self.endereco = endereco
+        self.contas = []
+
+    def realizar_transacao(self, conta, transacao):
+        transacao.registrar(conta)
+
+    def adicionar_conta(self, conta):
+        self.contas.append(conta)
+
+class PessoaFisica(Cliente):
+    def __init__(self, nome, data_nasc):
+        self.nome = nome
+        self.data_nasc = data_nasc
+
+    def criar_conta(self):
+        numero_conta = len(self.contas) + 1
+        numero_conta_formatado = f"{numero_conta:04d}"
+
+        conta = {
+            "numero_conta": numero_conta_formatado,
+            "nome": self.nome,
+            "cpf": self.cpf,
+            "saldo": 0,
+            "extrato": "",
+            "saques": 0
+        }
+
+        self.contas.append(conta)
+        print(f"Conta criada com sucesso! Agência: {AGENCIA} Conta: {numero_conta_formatado}")
 
 
 def depositar(valor, numero_conta_alvo, lista_contas):
