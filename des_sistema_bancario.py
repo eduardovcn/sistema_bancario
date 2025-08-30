@@ -1,5 +1,5 @@
 
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from datetime import datetime
 
 LIMITE_SAQUES = 3
@@ -118,157 +118,43 @@ class ContaCorrente(Conta):
         C/C: {self.numero}
         Titular: {self.cliente.nome}
         """
-
-        
-        
+   
 
 class Historico(Conta):
     def __init__(self):
         self._transacoes = []
 
-    def adicionar_transacao(self, tipo, valor):
-        self._transacoes.append({"tipo": tipo, "valor": valor})
+    @property
+    def transacoes(self):
+        return self._transacoes
+
+    def adicionar_transacao(self, transacao):
+        self._transacoes.append(
+            {
+                "tipo": transacao.__class__.__name__,
+                "valor": transacao.valor,
+                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            }
+        )
+
+
+class Transacao(ABC):
+    
+    @property
+    @abstractmethod
+    def valor(self):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def registrar(self, conta):
+        pass
 
 
 
 
 
-    def criar_conta(self):
-        numero_conta = len(self.contas) + 1
-        numero_conta_formatado = f"{numero_conta:04d}"
-
-        conta = {
-            "numero_conta": numero_conta_formatado,
-            "nome": self.nome,
-            "cpf": self.cpf,
-            "saldo": 0,
-            "extrato": "",
-            "saques": 0
-        }
-
-        self.contas.append(conta)
-        print(f"Conta criada com sucesso! Agência: {AGENCIA} Conta: {numero_conta_formatado}")
 
 
-def depositar(valor, numero_conta_alvo, lista_contas):
-    """
-    Deposita um valor em uma conta específica na lista de lista_contas.
-    Retorna True se o depósito foi bem-sucedido, False caso contrário.
-    """
-    if valor <= 0:
-        print("\n@@@ Operação falhou! O valor do depósito deve ser positivo. @@@")
-        return 
-
-    # Percorre a lista de lista_contas UMA ÚNICA VEZ
-    for conta in lista_contas:
-        # Procura pela conta correta
-        if conta['numero_conta'] == numero_conta_alvo:
-            # Modifica o saldo e o extrato DENTRO do dicionário da conta
-            conta['saldo'] += valor
-            conta['extrato'] += f"Depósito: R$ {valor:.2f}\n"
-
-            print(f"\n=== Depósito de R$ {valor:.2f} realizado com sucesso! ===")
-            print(f"Extrato da conta {numero_conta_alvo}:")
-            print(conta['extrato'])
-            return True # Sucesso!
-
-    # Se o loop terminar e nenhuma conta for encontrada
-    print(f"\n@@@ Operação falhou! A conta {numero_conta_alvo} não foi encontrada. @@@")
-    return False
-
-def sacar(valor, numero_conta_alvo, limite, lista_contas):
-    """
-    Saca um valor de uma conta específica na lista de lista_contas.
-    Retorna True se o saque foi bem-sucedido, False caso contrário.
-    """
-    if valor <= 0:
-        print("\n@@@ Operação falhou! O valor do saque deve ser positivo. @@@")
-        return False
-
-    for conta in lista_contas:
-        if conta['numero_conta'] == numero_conta_alvo:
-            if (conta['saldo'] >= valor) and (valor <= limite) and (conta['saques'] < LIMITE_SAQUES):
-                conta['saldo'] -= valor
-                conta['saques'] += 1
-                conta['extrato'] += f"Saque: R$ {valor:.2f}\n"
-                print(f"\n=== Saque de R$ {valor:.2f} realizado com sucesso! ===")
-                return True
-            
-            elif conta['saques'] >= LIMITE_SAQUES:
-                print("\n@@@ Operação falhou! Limite de saques atingido. @@@")
-                return False
-            else:
-                print("\n@@@ Operação falhou! Saldo insuficiente. @@@")
-                return False
-
-    print(f"\n@@@ Operação falhou! A conta {numero_conta_alvo} não foi encontrada. @@@")
-    return False
 
 
-def extrato_conta(conta_alvo, extrato, saldo):
-    for conta in lista_contas:
-        if conta['numero_conta'] == conta_alvo:
-            extrato = conta['extrato']
-            saldo = conta['saldo']
-            print(f"\n================ EXTRATO ================")
-            print(f"Conta: {conta_alvo}")
-            print(f'{extrato}')
-            print(f"\nSaldo: R$ {saldo:.2f}")
-            print("==========================================")
-            return
-
-def criar_conta(nome, cpf):
-    numero_conta  = len(lista_contas) + 1
-    if any(usuario['cpf'] == cpf and usuario['nome'] == nome for usuario in usuarios):
-        
-        numero_conta_formatado = f"{numero_conta:04d}"
-
-        conta = {
-            "numero_conta": numero_conta_formatado,
-            "nome": nome,
-            "cpf": cpf,
-            "saldo": 0,
-            "extrato": "",
-            "saques": 0
-        }
-
-        lista_contas.append(conta)
-        print(f"Conta criada com sucesso! Agência: {AGENCIA} Conta: {numero_conta_formatado}")
-        
-    else:
-        print("Usuário não encontrado. Tente novamente.")
-
-def listar_contas(usuarios, lista_contas):
-    print("--- LISTA DE CONTAS ---")
-    # Itera sobre cada dicionário de usuário na lista de usuários
-    for usuario in usuarios:
-        print(f"\nContas do(a) cliente: {usuario['nome']} (CPF: {usuario['cpf']})")
-        encontrou_conta = False
-        # Para cada usuário, itera sobre TODAS as lista_contas procurando correspondências
-        for conta in lista_contas:
-            if conta['cpf'] == usuario['cpf']: # Comparar pelo CPF é mais seguro
-                print(f"  -> Agência: {AGENCIA} | Conta: {conta['numero_conta']}")
-                encontrou_conta = True
-        
-        if not encontrou_conta:
-            print("  -> Nenhuma conta encontrada para este cliente.")
-    print("-----------------------")
-
-def criar_usuario(nome, data_nasc, cpf, endereco):
-    if any(usuario['cpf'] == cpf for usuario in usuarios):
-        print("Usuário já cadastrado com este CPF.")
-        
-    else:    
-        usuario = {
-            "nome": nome,
-            "data_nasc": data_nasc,
-            "cpf": cpf,
-            "endereco": endereco
-    }
-    usuarios.append(usuario)
-    print("Usuário criado com sucesso!")
-
-
-def sair():
-    print("Obrigado por usar nosso sistema bancário. Até logo!")
-    return exit()
